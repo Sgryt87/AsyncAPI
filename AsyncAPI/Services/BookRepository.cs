@@ -17,8 +17,23 @@ namespace AsyncAPI.Services
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        public IEnumerable<Book> GetBooks()
+        {
+            _context.Database.ExecuteSqlCommandAsync("SELECT SLEEP(2);");
+            return _context.Books.Include(b => b.Author)
+                .ToList();
+        }
+
+        public Book GetBook(int id)
+        {
+            return _context.Books
+                .Include(b => b.Author)
+                .FirstOrDefault(b => b.Id == id);
+        }
+
         public async Task<IEnumerable<Book>> GetBooksAsync()
         {
+            await _context.Database.ExecuteSqlCommandAsync("SELECT SLEEP(2);");
             return await _context.Books
                 .Include(b => b.Author).ToListAsync();
         }

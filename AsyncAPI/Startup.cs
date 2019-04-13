@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AsyncAPI.Contexts;
 using AsyncAPI.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -35,7 +36,10 @@ namespace AsyncAPI
                 cfg.UseMySql(Configuration.GetConnectionString("DbConnection"));
             });
 
-            services.AddTransient<IBookRepository, BookRepository>();
+//          services.AddTransient<IBookRepository, BookRepository>();
+            services.AddScoped<IBookRepository, BookRepository>();
+
+            services.AddAutoMapper();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

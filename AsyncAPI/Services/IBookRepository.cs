@@ -5,9 +5,9 @@ namespace AsyncAPI.Services
 {
     public interface IBookRepository
     {
-//        IEnumerable<Entities.Book> GetBooks();
-//
-//        Entities.Book GetBook(int id);
+        IEnumerable<Entities.Book> GetBooks();
+
+        Entities.Book GetBook(int id);
 
         Task<IEnumerable<Entities.Book>> GetBooksAsync();
 
