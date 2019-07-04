@@ -1,7 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using AsyncAPI.Entities;
 using AsyncAPI.Filters;
+using AsyncAPI.Models;
 using AsyncAPI.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AsyncAPI.Controllers
@@ -11,11 +14,13 @@ namespace AsyncAPI.Controllers
     public class BooksController : ControllerBase
     {
         private IBookRepository _bookRepository;
+        private readonly IMapper _mapper;
 
-        public BooksController(IBookRepository bookRepository)
+        public BooksController(IBookRepository bookRepository, IMapper mapper)
         {
             _bookRepository = bookRepository ?? throw new
                                   ArgumentNullException(nameof(bookRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -28,7 +33,7 @@ namespace AsyncAPI.Controllers
 
         [HttpGet]
         [BookResultFilter]
-        [Route("{id}")]
+        [Route("{id}", Name = "GetBook")]
         public async Task<IActionResult> GetBook(int id)
         {
             var bookEntity = await _bookRepository.GetBookAsync(id);
@@ -38,6 +43,28 @@ namespace AsyncAPI.Controllers
             }
 
             return Ok(bookEntity);
+        }
+
+        [HttpPost]
+        [BookResultFilter]
+        public async Task<IActionResult> CreateBook([FromBody] BookForCreation book)
+        {
+            // input validation, check if the Author exists, etc...
+
+            var bookEntity = _mapper.Map<Entities.Book>(book);
+            _bookRepository.AddBook(bookEntity);
+
+            await _bookRepository.SaveChangesAsync();
+
+            // Fetch(refresh) the book from the data store, including the author
+            await _bookRepository.GetBookAsync(bookEntity.Id);
+
+            return CreatedAtRoute("GetBook",
+                new
+                {
+                    id = bookEntity.Id
+                },
+                bookEntity);
         }
     }
 }

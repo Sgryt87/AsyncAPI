@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AsyncAPI.Filters
 {
@@ -21,8 +22,10 @@ namespace AsyncAPI.Filters
                 await next();
                 return;
             }
+            
+            var mapper = context.HttpContext.RequestServices.GetService<IMapper>();
 
-            resultFromAction.Value = Mapper.Map<IEnumerable<Models.Book>>(
+            resultFromAction.Value = mapper.Map<IEnumerable<Models.Book>>(
                 resultFromAction.Value);
 
             await next();
