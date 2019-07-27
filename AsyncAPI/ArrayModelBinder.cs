@@ -34,7 +34,7 @@ namespace AsyncAPI
                 // The value isnt white space
                 // an the type of the model is enumerable
                 // Get the enumerable's type and a converter
-                var elementType = bindingContext.ModelType.GetTypeInfo().GenericTypeParameters[0]; // TODO: debug !!!
+                var elementType = bindingContext.ModelType.GetTypeInfo().GetGenericArguments()[0];
                 var converter = TypeDescriptor.GetConverter(elementType);
 
                 // Convert each item in the value list to the enumerable type
